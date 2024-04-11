@@ -87,7 +87,7 @@ int** transposeMatrix(int** matrix, int rows, int cols) {
 
 // h 두 행렬의 곱셈 연산을 수행하는 함수
 int** multiplyMatrix(int** matrixA, int** matrixB, int rowsA, int colsA, int colsB) {
-    int** result = allocateMatrix(rowsA, colsB);
+    int** result = allocateMatrix(rowsA, colsB); // 결과 행렬의 크기는 rowsA × colsB가 되어야 합니다.
     for (int i = 0; i < rowsA; i++) {
         for (int j = 0; j < colsB; j++) {
             result[i][j] = 0;
@@ -124,31 +124,31 @@ int main() {
     printMatrix(matrixB, rowsB, colsB);
 
     // Add Matrix - A + B를 구현한다. (addition matrix())
-    int** additionResult = additionMatrix(matrixA, matrixB, rowsA, colsA);
+    int** addition = additionMatrix(matrixA, matrixB, rowsA, colsA);
     printf("Add Matrix - A + B:\n");
-    printMatrix(additionResult, rowsA, colsA);
+    printMatrix(addition, rowsA, colsA);
 
     // Subtract Matrix - A − B를 구현한다. (subtraction matrix())
-    int** subtractionResult = subtractionMatrix(matrixA, matrixB, rowsA, colsA);
+    int** subtraction = subtractionMatrix(matrixA, matrixB, rowsA, colsA);
     printf("Subract Matrix - A - B:\n");
-    printMatrix(subtractionResult, rowsA, colsA);
+    printMatrix(subtraction, rowsA, colsA);
 
     // Transpose matrix a - A의 전치행렬 T를 구현한다. (transpose matrix())
-    int** transposeResultA = transposeMatrix(matrixA, rowsA, colsA);
+    int** transpose = transposeMatrix(matrixA, rowsA, colsA);
     printf("Transpose matrix_a - A:\n");
-    printMatrix(transposeResultA, colsA, rowsA);
+    printMatrix(transpose, colsA, rowsA);
 
     // Multiply Matrix - A × B를 구현한다. (multiply matrix())
-    int** multiplicationResult = multiplyMatrix(matrixA, matrixB, rowsA, colsA, colsB);
+    int** multiplication = multiplyMatrix(matrixA, matrixB, rowsA, colsA, colsB);
     printf("Multiply Matrix - A * B:\n");
-    printMatrix(multiplicationResult, rowsA, colsB);
+    printMatrix(multiplication, rowsA, colsB);
 
     freeMatrix(matrixA, rowsA);
     freeMatrix(matrixB, rowsB);
-    freeMatrix(additionResult, rowsA);
-    freeMatrix(subtractionResult, rowsA);
-    freeMatrix(transposeResultA, colsA);
-    freeMatrix(multiplicationResult, rowsA);
+    freeMatrix(addition, rowsA);
+    freeMatrix(subtraction, rowsA);
+    freeMatrix(transpose, colsA);
+    freeMatrix(multiplication, rowsA);
 
     return 0;
 }
