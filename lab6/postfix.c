@@ -8,6 +8,8 @@
 #include<stdio.h>
 #include<stdlib.h>
 #include<string.h>
+#include<ctype.h>
+
 
 #define MAX_STACK_SIZE 10
 #define MAX_EXPRESSION_SIZE 20
@@ -51,6 +53,7 @@ int main()
 	char command;
 
 	do{
+		printf("[----- [ KIM SEUNGBEEN ] [ 2020039107 ] -----]\n");
 		printf("----------------------------------------------------------------\n");
 		printf("               Infix to Postfix, then Evaluation               \n");
 		printf("----------------------------------------------------------------\n");
@@ -90,15 +93,15 @@ int main()
 
 void postfixPush(char x)
 {
-    postfixStack[++postfixStackTop] = x;
+    postfixStack[++postfixStackTop] = x; // 배열에 x 값을 다음칸에 저장한다.
 }
 
 char postfixPop()
 {
-    char x;
-    if(postfixStackTop == -1)
+    char x; 
+    if(postfixStackTop == -1) // 비어있으면 널을 반환한다.
         return '\0';
-    else {
+    else { // 아니면 postfixstacktop 값을 x 에저장한다 그리고 postfixstacktop값을 -한다
     	x = postfixStack[postfixStackTop--];
     }
     return x;
@@ -106,7 +109,7 @@ char postfixPop()
 
 void evalPush(int x)
 {
-    evalStack[++evalStackTop] = x;
+    evalStack[++evalStackTop] = x; // evalstacktop의 다음칸에 x를 저장한다.
 }
 
 int evalPop()
@@ -167,20 +170,44 @@ void toPostfix()
 	char x; /* 문자하나를 임시로 저장하기 위한 변수 */
 
 	/* exp를 증가시켜가면서, 문자를 읽고 postfix로 변경 */
-	while(*exp != '\0')
-	{
-		/* 필요한 로직 완성 */
-
-	}
-
-	/* 필요한 로직 완성 */
-
+     while (*exp != '\0') {
+        // 숫자인 경우
+        if (isdigit(*exp)) {
+            charCat(exp); // postfixExp에 추가
+        }
+        // 연산자인 경우
+        else {
+            // 스택에 연산자를 push 또는 pop하여 postfix로 변경
+            precedence token = getToken(*exp);
+            if (token == rparen) {
+                // ')'를 만나면 '('가 나올 때까지 스택에서 pop하여 postfix에 추가
+                while (postfixStack[postfixStackTop] != '(') {
+                    charCat(&postfixStack[postfixStackTop--]);
+                }
+                postfixPop(); 
+            } else if (token == lparen || postfixStackTop == -1 || getPriority(postfixStack[postfixStackTop]) < getPriority(*exp)) {
+                // '('를 만나거나 스택이 비어있거나 현재 연산자가 스택의 top보다 우선순위가 높을 경우 연산자를 스택에 푸쉬
+                postfixPush(*exp);
+            } else {
+                // 현재 연산자가 스택의 top보다 우선순위가 낮을 경우 스택에서 pop하여 postfix에 추가한 후 현재 연산자를 푸쉬
+                while (postfixStackTop != -1 && getPriority(postfixStack[postfixStackTop]) >= getPriority(*exp)) {
+                    charCat(&postfixStack[postfixStackTop--]);
+                }
+                postfixPush(*exp);
+            }
+        }
+        exp++; // 다음 문자로 이동
+    }
+    // 스택에 남아있는 연산자들을 postfixExp에 추가
+    while (postfixStackTop != -1) {
+        charCat(&postfixStack[postfixStackTop--]);
+    }
 }
-void debug()
+void debug() // 디버그 값을 보여준다
 {
 	printf("\n---DEBUG\n");
-	printf("infixExp =  %s\n", infixExp);
-	printf("postExp =  %s\n", postfixExp);
+	printf("infixExp = %s\n", infixExp);
+	printf("postExp = %s\n", postfixExp);
 	printf("eval result = %d\n", evalResult);
 
 	printf("postfixStack : ");
@@ -191,7 +218,7 @@ void debug()
 
 }
 
-void reset()
+void reset() //리셋
 {
 	infixExp[0] = '\0';
 	postfixExp[0] = '\0';
@@ -206,6 +233,38 @@ void reset()
 
 void evaluation()
 {
-	/* postfixExp, evalStack을 이용한 계산 */
+    char *exp = postfixExp; // postfixExp의 문자를 읽기 위한 포인터
+    int op1, op2; // 연산에 필요한 두 피연산자
+    char x; // 문자를 임시로 저장하기 위한 변수
+
+    // postfixExp를 순회하며 계산
+    while (*exp != '\0') {
+        if (isdigit(*exp)) {
+            evalPush(*exp - '0'); // 숫자를 스택에 푸쉬
+        }
+        // 연산자인 경우
+        else {
+            // 스택에서 연산 후 결과를 스택에 푸쉬
+            op2 = evalPop();
+            op1 = evalPop();
+            switch (*exp) {
+                case '+':
+                    evalPush(op1 + op2);
+                    break;
+                case '-':
+                    evalPush(op1 - op2);
+                    break;
+                case '*':
+                    evalPush(op1 * op2);
+                    break;
+                case '/':
+                    evalPush(op1 / op2);
+                    break;
+            }
+        }
+        exp++; // 다음 문자로 이동
+    }
+    // 최종 계산 결과를 evalResult에 저장
+    evalResult = evalPop();
 }
 

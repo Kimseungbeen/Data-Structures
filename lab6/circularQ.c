@@ -34,6 +34,7 @@ int main(void)
 	char command;
 
 	do{
+		printf("[----- [ KIM SEUNGBEEN ] [ 2020039107 ] -----]\n");
 		printf("\n-----------------------------------------------------\n");
 		printf("                     Circular Q                   \n");
 		printf("------------------------------------------------------\n");
@@ -71,7 +72,7 @@ int main(void)
 	return 1;
 }
 
-QueueType *createQueue()
+QueueType *createQueue() //큐를 생성합니다
 {
 	QueueType *cQ;
 	cQ = (QueueType *)malloc(sizeof(QueueType));
@@ -87,7 +88,7 @@ int freeQueue(QueueType *cQ)
     return 1;
 }
 
-element getElement()
+element getElement() //값을 입력받습니다.
 {
 	element item;
 	printf("Input element = ");
@@ -97,30 +98,44 @@ element getElement()
 
 
 /* complete the function */
-int isEmpty(QueueType *cQ)
+int isEmpty(QueueType *cQ) // 큐가 비어 있는지를 체크하는 함수입니다. 
 {
-
-    return 0;
-}
-
-/* complete the function */
-int isFull(QueueType *cQ)
-{
-   return 0;
+    return (cQ->front == cQ->rear);
 }
 
 
 /* complete the function */
-void enQueue(QueueType *cQ, element item)
+int isFull(QueueType *cQ) // 큐가 가득 찼는지를 확인하는 큐 입니다.
 {
-	return 0;
+    return ((cQ->rear + 1) % MAX_QUEUE_SIZE == cQ->front);
 }
 
+
+
 /* complete the function */
-void deQueue(QueueType *cQ, element *item)
+void enQueue(QueueType *cQ, element item) // 큐에 입력을 받아 추가를 하는 함수입니다.
 {
-    return 0;
+    if (isFull(cQ)) {
+        printf("큐가 가득 찼습니다.\n");
+        return;
+    }
+    cQ->rear = (cQ->rear + 1) % MAX_QUEUE_SIZE;
+    cQ->queue[cQ->rear] = item;
 }
+
+
+/* complete the function */ 
+void deQueue(QueueType *cQ, element *item) // 큐에서 제거를 시키는 함수입니다.
+{
+    if (isEmpty(cQ)) {
+        printf("큐가 이미 비어있습니다.\n");
+        *item = '\0';
+        return;
+    }
+    cQ->front = (cQ->front + 1) % MAX_QUEUE_SIZE;
+    *item = cQ->queue[cQ->front];
+}
+
 
 
 void printQ(QueueType *cQ)
@@ -132,7 +147,7 @@ void printQ(QueueType *cQ)
 
 	printf("Circular Queue : [");
 
-	i = first;
+	i = first; // 큐의 값을 출력합니다.
 	while(i != last){
 		printf("%3c", cQ->queue[i]);
 		i = (i+1)%MAX_QUEUE_SIZE;
