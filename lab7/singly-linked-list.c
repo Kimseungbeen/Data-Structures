@@ -114,8 +114,8 @@ headNode* initialize(headNode* h) {
 		freeList(h);
 
 	/* headNode에 대한 메모리를 할당하여 리턴 */
-	headNode* temp = (headNode*)malloc(sizeof(headNode));
-	temp->first = NULL;
+	headNode* temp = (headNode*)malloc(sizeof(headNode)); //malloc 을 통해 할당을 한다
+	temp->first = NULL; //first 필드 NULL
 	return temp;
 }
 
@@ -142,65 +142,159 @@ int freeList(headNode* h){
  */
 int insertFirst(headNode* h, int key) {
 
-	listNode* node = (listNode*)malloc(sizeof(listNode));
+	listNode* node = (listNode*)malloc(sizeof(listNode)); //노드할당을 받아 키에 입력을한다.
 	node->key = key;
 
-	node->link = h->first;
+	node->link = h->first; //입력받은 노드의 링크를 헤드의 퍼스트로 바꾼다.
 	h->first = node;
 
 	return 0;
 }
 
 
-/* 리스트를 검색하여, 입력받은 key보다 큰값이 나오는 노드 바로 앞에 삽입 */
+/**
+ * 리스트에서 key보다 큰 값을 가지는 노드 바로 앞에 삽입
+ */
 int insertNode(headNode* h, int key) {
+    listNode* newNode = (listNode*)malloc(sizeof(listNode));
+    newNode->key = key;
+    newNode->link = NULL;
 
-	return 0;
+    if (h->first == NULL || key < h->first->key) { // 비어있거나 첫번째 노드의 키값이 새로운 키값보다 클 경우
+        newNode->link = h->first;
+        h->first = newNode;
+        return 0;
+    }
+
+    listNode* curr = h->first; 
+    while (curr->link != NULL && curr->link->key < key) {  // 리스트를 돌며 새로운 값보다 큰값을 찾아 삽입한다.
+        curr = curr->link;
+    }
+    newNode->link = curr->link;
+    curr->link = newNode;
+
+    return 0;
 }
 
 /**
- * list에 key에 대한 노드하나를 추가
+ * 리스트의 마지막에 key에 대한 노드를 추가
  */
 int insertLast(headNode* h, int key) {
+    listNode* newNode = (listNode*)malloc(sizeof(listNode));
+    newNode->key = key;
+    newNode->link = NULL;
 
-	return 0;
+    if (h->first == NULL) { // 리스트가 비어있으면 새로운 노드를 첫번쨰로 설정한다.
+        h->first = newNode;
+        return 0;
+    }
+
+    listNode* curr = h->first;
+    while (curr->link != NULL) { 
+        curr = curr->link;
+    }
+    curr->link = newNode;
+
+    return 0;
 }
 
-
 /**
- * list의 첫번째 노드 삭제
+ * 리스트의 첫 번째 노드를 삭제
  */
 int deleteFirst(headNode* h) {
+    if (h->first == NULL) {
+        printf("List is empty\n");
+        return 0;
+    }
 
+	// 첫번째 노드를 삭제하고 두번쨰 노드가 첫번째가 된다.
+    listNode* temp = h->first;
+    h->first = h->first->link;
+    free(temp);
 
-	return 0;
+    return 0;
 }
 
-
 /**
- * list에서 key에 대한 노드 삭제
+ * 리스트에서 주어진 key에 해당하는 노드를 삭제
  */
 int deleteNode(headNode* h, int key) {
+    if (h->first == NULL) {
+        printf("리스트가 비었습니다.\n");
+        return 0;
+    }
 
-	return 0;
+    listNode* curr = h->first;
+    listNode* prev = NULL;
 
+    while (curr != NULL && curr->key != key) {
+        prev = curr;
+        curr = curr->link;
+    }
+
+    if (curr == NULL) {
+        printf("해당값을 찾을 수 없습니다.\n");
+        return 0;
+    }
+
+    if (prev == NULL) {
+        h->first = curr->link;
+    } else {
+        prev->link = curr->link;
+    }
+
+    free(curr);
+
+    return 0;
 }
 
 /**
- * list의 마지막 노드 삭제
+ * 리스트의 마지막 노드를 삭제
  */
 int deleteLast(headNode* h) {
+    if (h->first == NULL) {
+        printf("리스트가 비었습니다.\n");
+        return 0;
+    }
 
-	return 0;
+    listNode* curr = h->first;
+    listNode* prev = NULL;
+
+    while (curr->link != NULL) {
+        prev = curr;
+        curr = curr->link;
+    }
+
+    if (prev == NULL) {
+        h->first = NULL;
+    } else {
+        prev->link = NULL;
+    }
+
+    free(curr);
+
+    return 0;
 }
 
-
 /**
- * 리스트의 링크를 역순으로 재 배치
+ * 리스트의 링크를 역순으로 재배치
  */
 int invertList(headNode* h) {
+    listNode* prev = NULL;
+    listNode* curr = h->first;
+    listNode* next = NULL;
 
-	return 0;
+	// 현재 노드를 이전 노드와 연결하여 역순으로 재배치 한다.
+    while (curr != NULL) {
+        next = curr->link;
+        curr->link = prev;
+        prev = curr;
+        curr = next;
+    }
+
+    h->first = prev;
+
+    return 0;
 }
 
 
